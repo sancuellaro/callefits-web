@@ -2,9 +2,9 @@
 
 ## Información General
 - **Marca:** **CALLEFITS BY DANNI**
-- **Versión:** 0.1.0-alpha.6
-- **Fase Actual:** FASE 6 COMPLETADA → Lista para iniciar FASE 7 (Panel Administrativo CMS)
-- **Última Validación:** Backend Supabase, adaptador híbrido y 112 tests — typecheck, lint, build sin vars Supabase (2026-09-04)
+- **Versión:** 0.1.0-alpha.7
+- **Fase Actual:** FASE 7 COMPLETADA → Lista para iniciar FASE 8 (SEO Técnico, Accesibilidad WCAG y Testing E2E)
+- **Última Validación:** Panel Admin CMS, middleware de protección, 133 tests — typecheck, lint, build con Supabase activo (2026-09-04)
 
 ---
 
@@ -88,8 +88,26 @@
 - [x] `tests/unit/supabase-service.test.ts` — 23 pruebas: `isSupabaseConfigured()` false en test env, todos los métodos del servicio validados con mock fallback y ProductSchema.
 - [x] Quality Gates verdes: `typecheck` (0), `lint` (0), `test` (112/112), `build` (✓ sin vars Supabase).
 
-### En Progreso (Fase 7 Inmediata)
-- [ ] Panel Administrativo CMS: autenticación Supabase Auth, middleware de protección, formularios de gestión de prendas.
+### Completados (Fase 7)
+- [x] `src/lib/env-check.ts` — `isSupabaseConfigured()` edge-safe (sin next/headers), importable en Client Components y middleware.
+- [x] `src/lib/admin-schemas.ts` — Schemas Zod sin dependencias server-only: `AdminLoginSchema`, `UpdateProductPricingSchema`, `UpdateVariantStockSchema`, `ImageUploadSchema`.
+- [x] `src/middleware.ts` — Protección middleware de `/admin/*`: Supabase Auth vía `createServerClient` con rotación de cookies + modo demo con cookie `__callefits_admin_demo`.
+- [x] `src/app/admin/actions.ts` — 5 Server Actions: `loginAdminAction`, `logoutAdminAction`, `updateProductPricingAndStatusAction`, `updateVariantStockAction`, `uploadProductImageAction`. Validación Zod + `revalidatePath` tras mutaciones.
+- [x] `src/app/admin/login/LoginForm.tsx` — Formulario de acceso con `useActionState`, spinner de carga, mensaje de ayuda en modo demo, credenciales precargadas.
+- [x] `src/app/admin/login/page.tsx` — Pantalla de acceso minimalista con diseño de marca premium.
+- [x] `src/app/admin/layout.tsx` — Layout condicional: sin sesión → solo children (login); con sesión → TopBar ónix + sub-nav + contenido. Detecta sesión server-side.
+- [x] `src/app/admin/products/page.tsx` — Dashboard de catálogo con 3 métricas (total, activos, borradores) + tabla de productos con thumbnails.
+- [x] `src/app/admin/products/AdminProductsTable.tsx` — Tabla cliente con búsqueda en tiempo real y filtro por categoría (pills).
+- [x] `src/app/admin/products/[id]/page.tsx` — Editor de prenda: 4 tarjetas (Info, Precios, Inventario, Galería).
+- [x] `src/app/admin/products/[id]/PricingForm.tsx` — Formulario de precio/estado con `useActionState`, feedback toast inline.
+- [x] `src/app/admin/products/[id]/StockForm.tsx` — Tabla de variantes con mini-forms por fila, `useActionState` individual.
+- [x] `src/app/admin/products/[id]/ImageUploadForm.tsx` — Galería de fotos actuales + uploader con validación client + Server Action.
+- [x] `getProductById` añadido a `product-service.ts`.
+- [x] `tests/unit/admin-actions.test.ts` — 21 pruebas de schemas Zod admin.
+- [x] Quality Gates verdes: `typecheck` (0), `lint` (0), `test` (133/133), `build` (✓ rutas admin como ƒ Dynamic).
+
+### En Progreso (Fase 8 Inmediata)
+- [ ] SEO técnico dinámico, accesibilidad WCAG 2.2 y suite de testing E2E (Playwright).
 
 ### Pendientes de Negocio (Para fases posteriores)
 - [ ] Dominio web definitivo registrado por el cliente.
@@ -108,6 +126,6 @@
 - [x] **Fase 4:** Catálogo Interactivo y Ficha de Producto con Pedido a WhatsApp
 - [x] **Fase 5:** Home Page de Alto Impacto, Storytelling "Danni", Confianza y FAQ (RF-04, RF-05, RF-06)
 - [x] **Fase 6:** Conexión con Supabase (PostgreSQL, Migraciones SQL, Storage y RLS)
-- [ ] **Fase 7:** Panel Administrativo Base (CMS para precios, fotos y catálogo)
+- [x] **Fase 7:** Panel Administrativo Base (CMS para precios, fotos y catálogo)
 - [ ] **Fase 8:** SEO Técnico Dinámico, Accesibilidad WCAG y Suite de Testing E2E
 - [ ] **Fase 9:** Pipeline CI/CD con GitHub Actions y Despliegue en Vercel

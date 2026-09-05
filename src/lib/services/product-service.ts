@@ -27,6 +27,11 @@ import {
 // ─── Mock local (fallback) ────────────────────────────────────────────────────
 
 import { MOCK_PRODUCTS } from "@/data/mock-products";
+import { isSupabaseConfigured } from "@/lib/env-check";
+
+// Re-exportar para que otros módulos server-only (admin/layout, admin/actions)
+// puedan importar desde product-service sin depender directamente de env-check.
+export { isSupabaseConfigured };
 
 // ─── Tipos internos de filas de la base de datos ─────────────────────────────
 
@@ -73,20 +78,6 @@ type DbProductRow = {
 
 // ─── Helpers internos ─────────────────────────────────────────────────────────
 
-/**
- * Verifica si las variables de entorno de Supabase están configuradas.
- * Exportada para testabilidad unitaria (ver tests/unit/supabase-service.test.ts).
- */
-export function isSupabaseConfigured(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  return (
-    typeof url === "string" &&
-    url.trim().length > 0 &&
-    typeof key === "string" &&
-    key.trim().length > 0
-  );
-}
 
 /**
  * Construye la URL pública de una imagen a partir de su storage_path.
@@ -437,6 +428,42 @@ export async function getCategoriesWithCounts(): Promise<CategorySummary[]> {
     return buildCategorySummaryFromMock();
   }
 }
+
+// ─── getProductById ───────────────────────────────────────────────────────────
+
+/**
+ * Busca un producto por su ID (UUID en Supabase o "prod-001" en mock).
+ * No filtra por status — uso exclusivo del panel administrativo.
+ */
+export async function getProductById(id: string): Promise<Product | null> {
+  if (!isSupabaseConfigured()) {
+    return MOCK_PRODUCTS.find((p) => p.id === id) ?? null;
+  }
+
+  try {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select(PRODUCT_SELECT)
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    return mapDbRowToProduct(data as unknown as DbProductRow);
+  } catch (err) {
+    console.warn(
+      "[ProductService] Usando catálogo local (Supabase no configurado o inalcanzable).",
+      err,
+    );
+    return MOCK_PRODUCTS.find((p) => p.id === id) ?? null;
+  }
+}
+
+// ─── getCategoriesWithCounts helpers ──────────────────────────────────────────
 
 /** Helper: construye el resumen de categorías desde el catálogo mock local. */
 function buildCategorySummaryFromMock(): CategorySummary[] {

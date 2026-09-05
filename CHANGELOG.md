@@ -9,6 +9,29 @@ Todas las modificaciones relevantes del proyecto se registran en este documento 
 
 ---
 
+## [0.1.0-alpha.7] - 2026-09-04
+
+### Added
+- `src/lib/env-check.ts` — `isSupabaseConfigured()` edge-safe, sin dependencias server-only, segura para Client Components y middleware.
+- `src/lib/admin-schemas.ts` — Schemas Zod admin: `AdminLoginSchema` (email + min 6 chars), `UpdateProductPricingSchema` (coerce + enum active/draft), `UpdateVariantStockSchema` (stock ≥ 0, checkbox HTML), `ImageUploadSchema` (MIME + 5 MB). Tipo `AdminActionResult`.
+- `src/middleware.ts` — Middleware de protección `/admin/*`: modo Supabase (session via `auth.getUser()`, rotación de cookies) + modo demo (`__callefits_admin_demo` cookie). Redirección a `/admin/login?redirect=` si no autenticado.
+- `src/app/admin/actions.ts` — 5 Server Actions con `'use server'`: login (Supabase o demo cookie), logout (Supabase signOut + borrado cookie), `updateProductPricingAndStatusAction` (precio, compareAt, status, isFeatured + `revalidatePath`), `updateVariantStockAction`, `uploadProductImageAction` (Supabase Storage + product_images record).
+- `src/app/admin/login/LoginForm.tsx` + `page.tsx` — Pantalla de acceso con marca editorial, `useActionState`, spinner de carga, nota de modo demo.
+- `src/app/admin/layout.tsx` — Layout condicional server-side: sin sesión → solo children; con sesión → TopBar ónix + sub-nav de productos + logout.
+- `src/app/admin/products/page.tsx` — Dashboard: 3 métricas (total/activos/borradores) + `AdminProductsTable`.
+- `src/app/admin/products/AdminProductsTable.tsx` — Tabla cliente con búsqueda en tiempo real, filtro de categoría por pills, thumbnail 48px, badges de estado, "Gestionar" link.
+- `src/app/admin/products/[id]/page.tsx` — Editor de prenda: 4 tarjetas. Usa `getProductById`.
+- `src/app/admin/products/[id]/PricingForm.tsx` — Formulario precio + compareAt + status radio + featured checkbox + feedback `useActionState`.
+- `src/app/admin/products/[id]/StockForm.tsx` — Tabla de variantes, mini-forms por fila, `useActionState` individual con `VariantStockRow`.
+- `src/app/admin/products/[id]/ImageUploadForm.tsx` — Galería con badges "Principal" + file input oculto + alt text + `uploadProductImageAction`.
+- `getProductById()` añadido a `product-service.ts`.
+- `tests/unit/admin-actions.test.ts` — 21 pruebas de schemas Zod.
+
+### Changed
+- `src/lib/services/product-service.ts` — `isSupabaseConfigured` ahora importada de `env-check` (no definida inline) y re-exportada.
+
+---
+
 ## [0.1.0-alpha.6] - 2026-09-04
 
 ### Added
