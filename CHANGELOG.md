@@ -9,6 +9,27 @@ Todas las modificaciones relevantes del proyecto se registran en este documento 
 
 ---
 
+## [0.1.0-alpha.4] - 2026-09-04
+
+### Added
+- `src/lib/variant-utils.ts` — Utilidades puras para selección de variantes: `getUniqueColors`, `getAllUniqueSizes` (orden XS→XL), `getVariantByColorAndSize`, `isSizeAvailableForColor` (stock > 0 AND isAvailable), `getFirstAvailableSizeForColor`.
+- `src/components/features/products/ProductCard.tsx` — Tarjeta editorial: `aspect-[3/4]`, zoom `scale-105` hover, badge OFERTA/DESTACADO, swatches colorHex, precios con `formatPrice` y precio tachado si `compareAtPrice`. Server Component.
+- `src/components/features/products/CatalogFilters.tsx` — Pills de 5 categorías + select de ordenamiento. Navegación con `useRouter` sin `useSearchParams` (evita Suspense). Client Component.
+- `src/components/features/products/CatalogEmptyState.tsx` — Estado vacío con icono de búsqueda y enlace de reset. Server Component.
+- `src/app/catalog/loading.tsx` — Skeleton loader: barra de filtros + grid 2/3/4 cols con 8 tarjetas `aspect-[3/4]` pulsantes.
+- `src/app/catalog/page.tsx` — Server Component: `await searchParams` (Next.js 15), validación safe de `category` y `sort`, header editorial y grilla 2/3/4 cols.
+- `src/components/features/products/ProductGallery.tsx` — Galería cliente: miniaturas en columna vertical (desktop) u horizontal (móvil), borde activo de 2px, `priority` en primera imagen. Client Component.
+- `src/components/features/products/ProductAccordion.tsx` — Acordeón multi-sección (Specs Técnicas / Cuidados / Envíos), estado open independiente por sección, transición `max-h` CSS. Client Component.
+- `src/components/features/products/ProductPurchasePanel.tsx` — Selector color (muestrario circular con `ring`), selector talla (deshabilitado con línea diagonal si agotado), botón WhatsApp ónix ancho completo o estado "AGOTADO". Client Component.
+- `src/app/catalog/[slug]/page.tsx` — Server Component: `await params` (Next.js 15), `notFound()` si slug inválido, breadcrumbs accesibles, layout `grid-cols-12` (7+5), `generateMetadata` dinámico, sección de relacionados.
+- `src/app/catalog/[slug]/not-found.tsx` — Vista 404 de producto con botones Catálogo e Inicio.
+- `tests/unit/catalog-ui.test.ts` — 20 pruebas de `variant-utils`.
+
+### Changed
+- `next.config.ts` — Añadido `images.remotePatterns` para `images.unsplash.com` (https).
+
+---
+
 ## [0.1.0-alpha.3] - 2026-09-04
 
 ### Added

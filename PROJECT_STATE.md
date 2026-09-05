@@ -2,9 +2,9 @@
 
 ## Información General
 - **Marca:** **CALLEFITS BY DANNI**
-- **Versión:** 0.1.0-alpha.3
-- **Fase Actual:** FASE 3 COMPLETADA → Lista para iniciar FASE 4 (Catálogo Interactivo y Ficha de Producto con WhatsApp)
-- **Última Validación:** Capa de datos, 16 prendas editoriales, formatters y 50 tests unitarios verificados (2026-09-04)
+- **Versión:** 0.1.0-alpha.4
+- **Fase Actual:** FASE 4 COMPLETADA → Lista para iniciar FASE 5 (Home Page de Alto Impacto)
+- **Última Validación:** Catálogo filtrable, ficha de producto + botón WhatsApp — 70 tests, typecheck, lint y build de producción verificados (2026-09-04)
 
 ---
 
@@ -47,10 +47,24 @@
 - [x] `tests/unit/product-service.test.ts` — 26 pruebas: filtros, ordenamientos, búsqueda textual, slug lookup, featured, related y categorías.
 - [x] Quality Gates verdes: `typecheck` (0 errores), `lint` (0 advertencias), `test` (50/50).
 
-### En Progreso (Fase 4 Inmediata)
-- [ ] Página de catálogo `/catalog` con filtros por categoría URL-safe y estado skeleton.
-- [ ] Tarjeta de producto `ProductCard.tsx` con precio, badge de descuento y CTA.
-- [ ] Ficha de producto `/catalog/[slug]` con galería, selector de variante y botón WhatsApp.
+### Completados (Fase 4)
+- [x] `next.config.ts` — `remotePatterns` para `images.unsplash.com` + `next/image` operativo.
+- [x] `src/lib/variant-utils.ts` — Lógica pura y testeable: `getUniqueColors`, `getAllUniqueSizes`, `getVariantByColorAndSize`, `isSizeAvailableForColor`, `getFirstAvailableSizeForColor`.
+- [x] `ProductCard.tsx` — Tarjeta editorial, `aspect-[3/4]`, zoom hover, badge descuento/destacado, swatches de color, precios formateados. Server Component.
+- [x] `CatalogFilters.tsx` — Pills de categoría + select de ordenamiento con `useRouter`, sin `useSearchParams`. Client Component.
+- [x] `CatalogEmptyState.tsx` — Estado vacío sobrio con botón de reset. Server Component.
+- [x] `catalog/loading.tsx` — Skeleton de filtros + 8 tarjetas `aspect-[3/4]` pulsantes.
+- [x] `catalog/page.tsx` — Server Component que resuelve `await searchParams`, valida filtros y renderiza grilla 2/3/4 cols.
+- [x] `ProductGallery.tsx` — Galería interactiva con miniaturas: vertical desktop / horizontal móvil. Client Component.
+- [x] `ProductAccordion.tsx` — 3 secciones colapsables (Specs, Cuidados, Envíos). Client Component.
+- [x] `ProductPurchasePanel.tsx` — Selector color+talla, variante agotada deshabilitada, botón WhatsApp con `buildProductWhatsAppUrl`. Client Component.
+- [x] `catalog/[slug]/page.tsx` — Server Component con `await params`, breadcrumbs, layout 7/5 cols desktop, productos relacionados. Metadatos dinámicos.
+- [x] `catalog/[slug]/not-found.tsx` — Vista 404 de producto con botones de regreso.
+- [x] `tests/unit/catalog-ui.test.ts` — 20 pruebas de `variant-utils` (colores, tallas, disponibilidad, primer disponible).
+- [x] Quality Gates verdes: `typecheck` (0), `lint` (0), `test` (70/70), `build` (✓ sin errores).
+
+### En Progreso (Fase 5 Inmediata)
+- [ ] Home Page de alto impacto: Hero, Categorías, Diferenciadores, Storytelling Danni, Testimonios, FAQ.
 
 ### Pendientes de Negocio (Para fases posteriores)
 - [ ] Dominio web definitivo registrado por el cliente.
@@ -66,7 +80,7 @@
 - [x] **Fase 1:** Scaffolding Técnico, Tooling, Tokens CSS y Testing Base
 - [x] **Fase 2:** Layout Global, Navbar Responsive y Botón Flotante de WhatsApp
 - [x] **Fase 3:** Arquitectura de Datos, Tipos TypeScript y Mock Catálogo (RF-01, RF-02, RF-03)
-- [ ] **Fase 4:** Catálogo Interactivo y Ficha de Producto con Pedido a WhatsApp
+- [x] **Fase 4:** Catálogo Interactivo y Ficha de Producto con Pedido a WhatsApp
 - [ ] **Fase 5:** Home Page de Alto Impacto, Storytelling "Danni", Confianza y FAQ (RF-04, RF-05, RF-06)
 - [ ] **Fase 6:** Conexión con Supabase (PostgreSQL, Migraciones SQL, Storage y RLS)
 - [ ] **Fase 7:** Panel Administrativo Base (CMS para precios, fotos y catálogo)
