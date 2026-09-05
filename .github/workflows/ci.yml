@@ -1,0 +1,75 @@
+name: "CI Pipeline — CALLEFITS BY DANNI"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gates:
+    name: "Quality Gates"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # ── Paso 1: Checkout ─────────────────────────────────────────────────────
+      - name: "📥 Checkout código"
+        uses: actions/checkout@v4
+
+      # ── Paso 2: Node.js con caché npm ────────────────────────────────────────
+      - name: "⚙️ Setup Node.js 20"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # ── Paso 3: Instalación limpia ────────────────────────────────────────────
+      - name: "📦 Instalar dependencias (npm ci)"
+        run: npm ci
+
+      # ── Quality Gate 1: Lint ──────────────────────────────────────────────────
+      - name: "🔍 Quality Gate 1 — ESLint"
+        run: npm run lint
+
+      # ── Quality Gate 2: TypeScript ────────────────────────────────────────────
+      - name: "🔷 Quality Gate 2 — TypeScript strict"
+        run: npm run typecheck
+
+      # ── Quality Gate 3: Unit Tests ────────────────────────────────────────────
+      - name: "🧪 Quality Gate 3 — Vitest (unit + integration)"
+        run: npm run test
+
+      # ── Paso 7: Instalar navegadores Playwright ────────────────────────────────
+      - name: "🌐 Instalar Chromium para Playwright"
+        run: npx playwright install --with-deps chromium
+
+      # ── Quality Gate 4: Pruebas E2E ───────────────────────────────────────────
+      # El servidor de Next.js se arranca automáticamente por playwright.config.ts
+      # en modo CI: "npm run build && npm run start"
+      - name: "🎭 Quality Gate 4 — Playwright E2E (Desktop Chrome)"
+        run: npm run test:e2e -- --project="Desktop Chrome"
+        env:
+          CI: "true"
+          # Supabase no configurado en CI → fallback a catálogo mock (modo demo)
+          # Las variables de Supabase se configuran únicamente en el entorno de
+          # Vercel production/preview mediante secrets del repositorio.
+
+      # ── Quality Gate 5: Build de producción ───────────────────────────────────
+      - name: "🏗️ Quality Gate 5 — Build de producción Next.js"
+        run: npm run build
+
+      # ── Reporte de artefactos (solo en fallos de E2E) ─────────────────────────
+      - name: "📸 Subir artefactos de Playwright (en fallo)"
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

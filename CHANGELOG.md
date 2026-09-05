@@ -9,6 +9,56 @@ Todas las modificaciones relevantes del proyecto se registran en este documento 
 
 ---
 
+## [1.0.0] — Release Oficial — 2026-09-05
+
+### 🎉 Resumen Ejecutivo — Plataforma CALLEFITS BY DANNI v1.0.0
+
+Primera versión de producción de la plataforma web comercial de **CALLEFITS BY DANNI**, marca colombiana de ropa deportiva femenina de alta gama. La plataforma convierte visitantes desde búsqueda orgánica y redes sociales directamente hacia pedidos por WhatsApp con atención personalizada.
+
+### Added — Implementación completa del MVP
+
+**Layout Editorial y UX (Fase 2)**
+- Announcement bar superior, Navbar sticky con backdrop-blur y drawer móvil animado (Framer Motion), Footer 4 columnas responsivo, cápsula flotante de WhatsApp (pill/círculo adaptativo).
+
+**Catálogo Interactivo y Ficha de Producto (Fases 3 y 4)**
+- 16 prendas editoriales (Leggings, Tops, Sets, Enterizos) con schemas Zod estrictos y datos validados al momento de carga del módulo.
+- Catálogo filtrable con URL params seguros, ordenamiento por precio, estado vacío elegante y skeleton loader.
+- Ficha de producto: galería interactiva con miniaturas, selector de color (muestrario HEX), selector de talla (agotado/disponible), acordeón de especificaciones técnicas.
+- Generador de URL de pedido WhatsApp con mensaje prellenado codificado (`buildProductWhatsAppUrl`).
+
+**Home Page Editorial de Alto Impacto (Fase 5)**
+- Hero section 80/88vh con layout split editorial, doble CTA (catálogo + asesoría WhatsApp), sellos de confianza.
+- Categorías destacadas desde el servicio de datos, sección de prendas más deseadas, 4 pilares de marca con iconos Lucide.
+- Storytelling de Danni (2 columnas asimétricas, cita editorial), testimonios placeholder con calificación ★★★★★, FAQ interactivo con acordeón animado.
+
+**Backend Supabase con Resiliencia (Fase 6)**
+- Esquema PostgreSQL 16: 4 enums, 5 tablas relacionales (categories, products, product_variants, product_images, testimonials), trigger `updated_at`, 10 índices, RLS completo.
+- Bucket `products-media` en Supabase Storage con políticas de acceso.
+- Adaptador híbrido: si Supabase falla o no está configurado, el servicio cae silenciosamente al catálogo mock local — **cero pantallas blancas**.
+
+**Panel Administrativo CMS (Fase 7)**
+- Middleware de Next.js protegiendo `/admin/*` con Supabase Auth + cookie demo para desarrollo.
+- CRUD completo: crear, editar precios/estado/destacado, gestionar variantes (añadir/eliminar/stock), subir imágenes al bucket.
+- Tabla de catálogo con búsqueda en tiempo real, filtros por categoría y badges de estado.
+- Server Actions tipadas con Zod, `revalidatePath` instantáneo para reflejar cambios en la tienda.
+
+**SEO Técnico, Accesibilidad y Testing (Fases 8 y 9)**
+- Metadatos dinámicos por página con keywords comerciales, Open Graph, Twitter Card y canonical URL.
+- Schemas Schema.org: `ClothingStore` en Home, `Product` + `BreadcrumbList` en fichas de producto.
+- `sitemap.xml` dinámico con 22+ URLs (home, catálogo, 4 categorías, 16 productos). `robots.txt` con `Disallow: /admin/`.
+- Skip link "Saltar al contenido principal" (WCAG 2.2 Criterion 2.4.1) y `id="main-content"`.
+- Encabezados HTTP de seguridad: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`.
+- Suite de testing: **150 tests Vitest** (unitarios + integración) + **15 tests Playwright E2E** (shopping flow, admin guard, SEO/a11y).
+- Pipeline CI/CD con GitHub Actions: 5 Quality Gates en cada PR a `main`.
+
+### Security
+- `SUPABASE_SERVICE_ROLE_KEY` exclusiva del servidor (nunca `NEXT_PUBLIC_`).
+- RLS activo en todas las tablas de Supabase.
+- Middleware de autenticación admin con verificación server-side.
+- Encabezados HTTP de seguridad aplicados a todas las rutas.
+
+---
+
 ## [0.1.0-alpha.8] - 2026-09-04
 
 ### Fixed
