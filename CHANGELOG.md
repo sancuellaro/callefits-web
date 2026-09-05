@@ -9,6 +9,26 @@ Todas las modificaciones relevantes del proyecto se registran en este documento 
 
 ---
 
+## [0.1.0-alpha.8] - 2026-09-04
+
+### Fixed
+- `ImageUploadForm.tsx` — Eliminado `encType="multipart/form-data"` redundante; React 19 + Next.js 15 lo infieren automáticamente al recibir `File` en `FormData`.
+- `admin-schemas.ts` (`UpdateProductPricingSchema`) — Corregida validación de precios: `basePrice` ahora acepta cualquier entero ≥ $1.000 COP; `compareAtPrice` es completamente opcional (vacío/0 → `undefined`); validación cruzada solo activa si se proporciona (debe ser > basePrice). Elimina falsos errores con precios como $120.000 o $95.000.
+
+### Added
+- `src/lib/admin-schemas.ts` — Nuevos schemas: `CreateProductSchema` (con careInstructions split by newline), `DeleteProductSchema`, `AddVariantSchema`, `DeleteVariantSchema`. Función `generateSlug()` exportada.
+- `src/lib/services/product-service.ts` — Store mutable `_demoStore` para operaciones CRUD en modo demo; funciones: `createProduct`, `deleteProduct`, `addVariant`, `deleteVariant`, `updateVariantStock`. `_resetDemoStore()` para tests.
+- `src/app/admin/actions.ts` — 4 nuevas Server Actions: `createProductAction`, `deleteProductAction`, `addVariantAction`, `deleteVariantAction`. Todas validan con Zod + `revalidatePath` + redirect en creación.
+- `src/app/admin/products/new/page.tsx` + `CreateProductForm.tsx` — Formulario completo de creación de prenda: nombre (slug preview en tiempo real), categoría, descripciones, precios, atributos textiles, instrucciones de cuidado, variante inicial con color picker HEX.
+- `src/app/admin/products/[id]/AddVariantForm.tsx` — Subformulario para añadir nuevas variantes de talla/color con color picker nativo.
+- `src/app/admin/products/AdminProductsTable.tsx` — Botón "Eliminar" por fila con `window.confirm` accesible y `deleteProductAction`.
+- `src/app/admin/products/page.tsx` — Botón "AGREGAR NUEVA PRENDA" enlaza a `/admin/products/new`.
+- `src/app/admin/products/[id]/StockForm.tsx` — Botón `DeleteVariantButton` por variante con `deleteVariantAction`.
+- `src/app/admin/products/[id]/page.tsx` — Integración de `AddVariantForm` en la tarjeta de inventario.
+- `tests/unit/admin-actions.test.ts` — Expandido a 38 pruebas: `generateSlug`, `CreateProductSchema`, `DeleteProductSchema`, `AddVariantSchema`, `DeleteVariantSchema`, corrección de precios.
+
+---
+
 ## [0.1.0-alpha.7] - 2026-09-04
 
 ### Added

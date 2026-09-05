@@ -2,9 +2,9 @@
 
 ## Información General
 - **Marca:** **CALLEFITS BY DANNI**
-- **Versión:** 0.1.0-alpha.7
-- **Fase Actual:** FASE 7 COMPLETADA → Lista para iniciar FASE 8 (SEO Técnico, Accesibilidad WCAG y Testing E2E)
-- **Última Validación:** Panel Admin CMS, middleware de protección, 133 tests — typecheck, lint, build con Supabase activo (2026-09-04)
+- **Versión:** 0.1.0-alpha.8
+- **Fase Actual:** FASE 7.1 COMPLETADA (CRUD Completo + Bug Fixes) → Lista para FASE 8 (SEO + WCAG + E2E)
+- **Última Validación:** CRUD completo admin, bug de precios resuelto, 150 tests — typecheck, lint limpios (2026-09-04)
 
 ---
 

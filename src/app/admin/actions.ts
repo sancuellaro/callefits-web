@@ -15,11 +15,20 @@ import {
   AdminLoginSchema,
   UpdateProductPricingSchema,
   UpdateVariantStockSchema,
+  CreateProductSchema,
+  DeleteProductSchema,
+  AddVariantSchema,
+  DeleteVariantSchema,
   ImageUploadSchema,
+  generateSlug,
   type AdminActionResult,
 } from "@/lib/admin-schemas";
 import {
   isSupabaseConfigured,
+  createProduct,
+  deleteProduct,
+  addVariant,
+  deleteVariant,
 } from "@/lib/services/product-service";
 import {
   DEMO_SESSION_COOKIE,
@@ -211,6 +220,166 @@ export async function updateVariantStockAction(
       ? "Stock actualizado con éxito."
       : "Stock registrado en modo demo.",
   };
+}
+
+// ─── createProductAction ──────────────────────────────────────────────────────
+
+export async function createProductAction(
+  _prevState: AdminActionResult,
+  formData: FormData,
+): Promise<AdminActionResult> {
+  const parsed = CreateProductSchema.safeParse({
+    name: formData.get("name"),
+    category: formData.get("category"),
+    shortDescription: formData.get("shortDescription"),
+    description: formData.get("description"),
+    basePrice: formData.get("basePrice"),
+    compareAtPrice: formData.get("compareAtPrice") || undefined,
+    status: formData.get("status") ?? "draft",
+    isFeatured: formData.get("isFeatured"),
+    compression: formData.get("compression"),
+    material: formData.get("material"),
+    waistType: formData.get("waistType"),
+    careInstructions: formData.get("careInstructions"),
+    variantSize: formData.get("variantSize"),
+    variantColor: formData.get("variantColor"),
+    variantColorHex: formData.get("variantColorHex"),
+    variantStock: formData.get("variantStock") ?? "0",
+  });
+
+  if (!parsed.success) {
+    const firstError = parsed.error.errors[0]?.message ?? "Datos de producto inválidos";
+    return { success: false, message: firstError };
+  }
+
+  const d = parsed.data;
+  const slug = generateSlug(d.name);
+
+  const result = await createProduct({
+    name: d.name,
+    slug,
+    category: d.category,
+    shortDescription: d.shortDescription,
+    description: d.description,
+    basePrice: d.basePrice,
+    compareAtPrice: d.compareAtPrice,
+    status: d.status,
+    isFeatured: d.isFeatured,
+    attributes: {
+      compression: d.compression,
+      material: d.material,
+      waistType: d.waistType,
+      careInstructions: d.careInstructions,
+    },
+    initialVariant: {
+      size: d.variantSize,
+      color: d.variantColor,
+      colorHex: d.variantColorHex,
+      stockQuantity: d.variantStock,
+    },
+  });
+
+  if (!result) {
+    return { success: false, message: "Error al crear la prenda. Revisa los datos e inténtalo de nuevo." };
+  }
+
+  revalidatePath("/catalog", "layout");
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/products");
+
+  redirect("/admin/products");
+}
+
+// ─── deleteProductAction ──────────────────────────────────────────────────────
+
+export async function deleteProductAction(
+  _prevState: AdminActionResult,
+  formData: FormData,
+): Promise<AdminActionResult> {
+  const parsed = DeleteProductSchema.safeParse({
+    productId: formData.get("productId"),
+  });
+
+  if (!parsed.success) {
+    return { success: false, message: "ID de producto inválido." };
+  }
+
+  const ok = await deleteProduct(parsed.data.productId);
+
+  if (!ok) {
+    return { success: false, message: "Error al eliminar la prenda. Intenta de nuevo." };
+  }
+
+  revalidatePath("/catalog", "layout");
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/products");
+
+  return { success: true, message: "Prenda eliminada (archivada) correctamente." };
+}
+
+// ─── addVariantAction ─────────────────────────────────────────────────────────
+
+export async function addVariantAction(
+  _prevState: AdminActionResult,
+  formData: FormData,
+): Promise<AdminActionResult> {
+  const parsed = AddVariantSchema.safeParse({
+    productId: formData.get("productId"),
+    productSlug: formData.get("productSlug"),
+    size: formData.get("size"),
+    color: formData.get("color"),
+    colorHex: formData.get("colorHex"),
+    stockQuantity: formData.get("stockQuantity") ?? "0",
+  });
+
+  if (!parsed.success) {
+    const firstError = parsed.error.errors[0]?.message ?? "Datos de variante inválidos";
+    return { success: false, message: firstError };
+  }
+
+  const { productId, productSlug, size, color, colorHex, stockQuantity } = parsed.data;
+
+  const ok = await addVariant(productId, productSlug, { size, color, colorHex, stockQuantity });
+
+  if (!ok) {
+    return { success: false, message: "Error al añadir la variante. Intenta de nuevo." };
+  }
+
+  revalidatePath(`/catalog/${productSlug}`);
+  revalidatePath(`/admin/products/${productId}`);
+  revalidatePath("/admin/products");
+
+  return { success: true, message: `Variante ${size} — ${color} añadida con éxito.` };
+}
+
+// ─── deleteVariantAction ──────────────────────────────────────────────────────
+
+export async function deleteVariantAction(
+  _prevState: AdminActionResult,
+  formData: FormData,
+): Promise<AdminActionResult> {
+  const parsed = DeleteVariantSchema.safeParse({
+    variantId: formData.get("variantId"),
+    productSlug: formData.get("productSlug"),
+  });
+
+  if (!parsed.success) {
+    return { success: false, message: "Datos de variante inválidos." };
+  }
+
+  const { variantId, productSlug } = parsed.data;
+  const productId = String(formData.get("productId") ?? "");
+
+  const ok = await deleteVariant(productId, variantId);
+
+  if (!ok) {
+    return { success: false, message: "Error al eliminar la variante. Intenta de nuevo." };
+  }
+
+  revalidatePath(`/catalog/${productSlug}`);
+  if (productId) revalidatePath(`/admin/products/${productId}`);
+
+  return { success: true, message: "Variante eliminada correctamente." };
 }
 
 // ─── uploadProductImageAction ─────────────────────────────────────────────────

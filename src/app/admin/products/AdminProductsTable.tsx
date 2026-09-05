@@ -1,11 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Trash2, Loader2 } from "lucide-react";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/formatters";
 import { CATEGORY_LABELS } from "@/types/product";
+import { deleteProductAction } from "../actions";
+
+// ─── Botón de eliminación ─────────────────────────────────────────────────────
+
+function DeleteProductButton({
+  productId,
+  productName,
+}: {
+  productId: string;
+  productName: string;
+}) {
+  const [, formAction, isPending] = useActionState(deleteProductAction, {
+    success: false,
+    message: "",
+  });
+
+  return (
+    <form
+      action={formAction}
+      onSubmit={(e) => {
+        if (!window.confirm(`¿Eliminar "${productName}"? Esta acción la archivará y no estará visible en la tienda.`)) {
+          e.preventDefault();
+        }
+      }}
+    >
+      <input type="hidden" name="productId" value={productId} />
+      <button
+        type="submit"
+        disabled={isPending}
+        aria-label={`Eliminar ${productName}`}
+        title="Eliminar prenda"
+        className="flex h-8 w-8 items-center justify-center rounded-[var(--radius)] border border-red-200 text-red-500 transition-colors hover:bg-red-50 disabled:opacity-50"
+      >
+        {isPending ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+        ) : (
+          <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+        )}
+      </button>
+    </form>
+  );
+}
 
 interface AdminProductsTableProps {
   products: Product[];
@@ -165,12 +208,15 @@ export function AdminProductsTable({ products }: AdminProductsTableProps) {
 
                   {/* Acción */}
                   <td className="px-4 py-3 text-right">
-                    <Link
-                      href={`/admin/products/${p.id}`}
-                      className="inline-flex h-8 items-center rounded-[var(--radius)] bg-brand-primary px-3 text-[11px] font-semibold uppercase tracking-wider text-brand-primary-foreground transition-opacity hover:opacity-80"
-                    >
-                      Gestionar
-                    </Link>
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/admin/products/${p.id}`}
+                        className="inline-flex h-8 items-center rounded-[var(--radius)] bg-brand-primary px-3 text-[11px] font-semibold uppercase tracking-wider text-brand-primary-foreground transition-opacity hover:opacity-80"
+                      >
+                        Gestionar
+                      </Link>
+                      <DeleteProductButton productId={p.id} productName={p.name} />
+                    </div>
                   </td>
                 </tr>
               );

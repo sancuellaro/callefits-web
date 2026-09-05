@@ -1,17 +1,64 @@
 "use client";
 
 import { useActionState } from "react";
-import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import { updateVariantStockAction } from "../../actions";
+import { Loader2, CheckCircle2, AlertCircle, Trash2 } from "lucide-react";
+import { updateVariantStockAction, deleteVariantAction } from "../../actions";
 import type { ProductVariant } from "@/types/product";
+
+// ─── Botón eliminar variante ──────────────────────────────────────────────────
+
+function DeleteVariantButton({
+  variantId,
+  productId,
+  productSlug,
+  label,
+}: {
+  variantId: string;
+  productId: string;
+  productSlug: string;
+  label: string;
+}) {
+  const [, formAction, isPending] = useActionState(deleteVariantAction, {
+    success: false,
+    message: "",
+  });
+  return (
+    <form
+      action={formAction}
+      onSubmit={(e) => {
+        if (!window.confirm(`¿Eliminar variante ${label}? Esta acción no se puede deshacer.`)) {
+          e.preventDefault();
+        }
+      }}
+    >
+      <input type="hidden" name="variantId" value={variantId} />
+      <input type="hidden" name="productId" value={productId} />
+      <input type="hidden" name="productSlug" value={productSlug} />
+      <button
+        type="submit"
+        disabled={isPending}
+        aria-label={`Eliminar variante ${label}`}
+        title="Eliminar esta variante"
+        className="flex h-7 w-7 items-center justify-center rounded border border-red-200 text-red-400 transition-colors hover:bg-red-50 disabled:opacity-50"
+      >
+        {isPending ? (
+          <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+        ) : (
+          <Trash2 className="h-3 w-3" aria-hidden="true" />
+        )}
+      </button>
+    </form>
+  );
+}
 
 interface VariantStockRowProps {
   variant: ProductVariant;
+  productId: string;
   productSlug: string;
 }
 
 /** Fila individual de la tabla de stock, con su propio estado de acción. */
-function VariantStockRow({ variant, productSlug }: VariantStockRowProps) {
+function VariantStockRow({ variant, productId, productSlug }: VariantStockRowProps) {
   const [state, formAction, isPending] = useActionState(updateVariantStockAction, {
     success: false,
     message: "",
@@ -95,6 +142,14 @@ function VariantStockRow({ variant, productSlug }: VariantStockRowProps) {
             </span>
           )}
         </form>
+
+        {/* Botón eliminar variante */}
+        <DeleteVariantButton
+          variantId={variant.id}
+          productId={productId}
+          productSlug={productSlug}
+          label={`${variant.size} — ${variant.color}`}
+        />
       </td>
     </tr>
   );
@@ -104,16 +159,17 @@ function VariantStockRow({ variant, productSlug }: VariantStockRowProps) {
 
 interface StockFormProps {
   variants: ProductVariant[];
+  productId: string;
   productSlug: string;
 }
 
-export function StockForm({ variants, productSlug }: StockFormProps) {
+export function StockForm({ variants, productId, productSlug }: StockFormProps) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[540px]">
+      <table className="w-full min-w-[580px]">
         <thead>
           <tr className="border-b border-black/5">
-            {["Talla", "Color", "SKU", "Stock / Estado"].map((h) => (
+            {["Talla", "Color", "SKU", "Stock / Estado / Acción"].map((h) => (
               <th
                 key={h}
                 className="pb-3 pr-4 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-400"
@@ -125,7 +181,7 @@ export function StockForm({ variants, productSlug }: StockFormProps) {
         </thead>
         <tbody>
           {variants.map((v) => (
-            <VariantStockRow key={v.id} variant={v} productSlug={productSlug} />
+            <VariantStockRow key={v.id} variant={v} productId={productId} productSlug={productSlug} />
           ))}
         </tbody>
       </table>

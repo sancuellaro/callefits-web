@@ -49,8 +49,8 @@ export function ImageUploadForm({ productId, images }: ImageUploadFormProps) {
         </div>
       </div>
 
-      {/* Formulario de subida */}
-      <form action={formAction} encType="multipart/form-data" className="space-y-3">
+      {/* Formulario de subida — React 19 + Next.js 15 infieren multipart automáticamente */}
+      <form action={formAction} className="space-y-3">
         <input type="hidden" name="productId" value={productId} />
 
         <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-neutral-500">

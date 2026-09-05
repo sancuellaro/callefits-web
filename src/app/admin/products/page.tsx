@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import { getProducts } from "@/lib/services/product-service";
 import { AdminProductsTable } from "./AdminProductsTable";
 
@@ -40,14 +42,23 @@ export default async function AdminProductsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Encabezado */}
-      <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-400">
-          PANEL DE CONTROL
-        </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
-          Gestión del Catálogo
-        </h1>
+      {/* Encabezado + botón nueva prenda */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-400">
+            PANEL DE CONTROL
+          </p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
+            Gestión del Catálogo
+          </h1>
+        </div>
+        <Link
+          href="/admin/products/new"
+          className="inline-flex h-11 items-center gap-2 rounded-[var(--radius)] bg-brand-primary px-5 text-xs font-semibold uppercase tracking-wider text-brand-primary-foreground shadow-sm transition-opacity hover:opacity-90"
+        >
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          AGREGAR NUEVA PRENDA
+        </Link>
       </div>
 
       {/* Métricas */}

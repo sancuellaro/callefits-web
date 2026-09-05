@@ -28,10 +28,18 @@ import {
 
 import { MOCK_PRODUCTS } from "@/data/mock-products";
 import { isSupabaseConfigured } from "@/lib/env-check";
-
-// Re-exportar para que otros módulos server-only (admin/layout, admin/actions)
-// puedan importar desde product-service sin depender directamente de env-check.
 export { isSupabaseConfigured };
+
+// ─── Store mutable para modo demo ─────────────────────────────────────────────
+// Se inicializa como copia de MOCK_PRODUCTS. Solo se usa cuando Supabase
+// no está configurado. Persiste durante la vida del proceso (desarrollo).
+
+let _demoStore: Product[] = [...MOCK_PRODUCTS];
+
+/** Resetea el store a los datos originales del mock (útil en tests). */
+export function _resetDemoStore(): void {
+  _demoStore = [...MOCK_PRODUCTS];
+}
 
 // ─── Tipos internos de filas de la base de datos ─────────────────────────────
 
@@ -222,7 +230,7 @@ const PRODUCT_SELECT = `
 export async function getProducts(filters?: ProductFilters): Promise<Product[]> {
   if (!isSupabaseConfigured()) {
     console.info("[ProductService] Usando catálogo local (Supabase no configurado).");
-    return applyFiltersInMemory(MOCK_PRODUCTS, filters);
+    return applyFiltersInMemory(_demoStore, filters);
   }
 
   try {
@@ -244,7 +252,7 @@ export async function getProducts(filters?: ProductFilters): Promise<Product[]> 
       "[ProductService] Usando catálogo local (Supabase no configurado o inalcanzable).",
       err,
     );
-    return applyFiltersInMemory(MOCK_PRODUCTS, filters);
+    return applyFiltersInMemory(_demoStore, filters);
   }
 }
 
@@ -252,7 +260,7 @@ export async function getProducts(filters?: ProductFilters): Promise<Product[]> 
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   if (!isSupabaseConfigured()) {
-    return MOCK_PRODUCTS.find((p) => p.slug === slug && p.status === "active") ?? null;
+    return _demoStore.find((p) => p.slug === slug && p.status === "active") ?? null;
   }
 
   try {
@@ -275,7 +283,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       "[ProductService] Usando catálogo local (Supabase no configurado o inalcanzable).",
       err,
     );
-    return MOCK_PRODUCTS.find((p) => p.slug === slug && p.status === "active") ?? null;
+    return _demoStore.find((p) => p.slug === slug && p.status === "active") ?? null;
   }
 }
 
@@ -283,7 +291,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
   if (!isSupabaseConfigured()) {
-    return MOCK_PRODUCTS.filter((p) => p.isFeatured && p.status === "active").slice(
+    _demoStore.filter((p) => p.isFeatured && p.status === "active").slice(
       0,
       limit,
     );
@@ -309,7 +317,7 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
       "[ProductService] Usando catálogo local (Supabase no configurado o inalcanzable).",
       err,
     );
-    return MOCK_PRODUCTS.filter((p) => p.isFeatured && p.status === "active").slice(0, limit);
+    return _demoStore.filter((p) => p.isFeatured && p.status === "active").slice(0, limit);
   }
 }
 
@@ -321,7 +329,7 @@ export async function getRelatedProducts(
   limit = 4,
 ): Promise<Product[]> {
   if (!isSupabaseConfigured()) {
-    return MOCK_PRODUCTS.filter(
+    return _demoStore.filter(
       (p) => p.category === category && p.slug !== currentSlug && p.status === "active",
     ).slice(0, limit);
   }
@@ -357,7 +365,7 @@ export async function getRelatedProducts(
       "[ProductService] Usando catálogo local (Supabase no configurado o inalcanzable).",
       err,
     );
-    return MOCK_PRODUCTS.filter(
+    return _demoStore.filter(
       (p) => p.category === category && p.slug !== currentSlug && p.status === "active",
     ).slice(0, limit);
   }
@@ -437,7 +445,7 @@ export async function getCategoriesWithCounts(): Promise<CategorySummary[]> {
  */
 export async function getProductById(id: string): Promise<Product | null> {
   if (!isSupabaseConfigured()) {
-    return MOCK_PRODUCTS.find((p) => p.id === id) ?? null;
+    return _demoStore.find((p) => p.id === id) ?? null;
   }
 
   try {
@@ -459,7 +467,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       "[ProductService] Usando catálogo local (Supabase no configurado o inalcanzable).",
       err,
     );
-    return MOCK_PRODUCTS.find((p) => p.id === id) ?? null;
+    return _demoStore.find((p) => p.id === id) ?? null;
   }
 }
 
@@ -468,7 +476,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 /** Helper: construye el resumen de categorías desde el catálogo mock local. */
 function buildCategorySummaryFromMock(): CategorySummary[] {
   return CategoryEnum.options.map((category) => {
-    const items = MOCK_PRODUCTS.filter(
+    const items = _demoStore.filter(
       (p) => p.category === category && p.status === "active",
     );
     const featured = items.find((p) => p.isFeatured);
@@ -483,4 +491,291 @@ function buildCategorySummaryFromMock(): CategorySummary[] {
       image: primaryImage,
     };
   });
+}
+
+// ─── CRUD ADMINISTRATIVO ──────────────────────────────────────────────────────
+
+// Tipos para datos de entrada (sin UUID que se genera en el servidor)
+export interface NewProductData {
+  name: string;
+  slug: string;
+  category: Category;
+  shortDescription: string;
+  description: string;
+  basePrice: number;
+  compareAtPrice?: number;
+  status: "active" | "draft";
+  isFeatured: boolean;
+  attributes: {
+    compression: "Alta" | "Media" | "Ligera";
+    material: string;
+    waistType: string;
+    careInstructions: string[];
+  };
+  initialVariant: {
+    size: "XS" | "S" | "M" | "L" | "XL";
+    color: string;
+    colorHex: string;
+    stockQuantity: number;
+  };
+}
+
+export interface NewVariantData {
+  size: "XS" | "S" | "M" | "L" | "XL";
+  color: string;
+  colorHex: string;
+  stockQuantity: number;
+}
+
+/** Genera un SKU único a partir de los datos de la prenda y variante. */
+function generateSku(
+  category: string,
+  slug: string,
+  color: string,
+  size: string,
+): string {
+  const cat = category.slice(0, 3).toUpperCase();
+  const name = slug.slice(0, 4).toUpperCase().replace(/-/g, "");
+  const col = color.slice(0, 3).toUpperCase().replace(/\s/g, "");
+  return `CF-${cat}-${name}-${col}-${size}`;
+}
+
+/** Imagen placeholder para productos nuevos sin fotografías aún. */
+const PLACEHOLDER_IMG =
+  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=80";
+
+// ─── createProduct ─────────────────────────────────────────────────────────────
+
+export async function createProduct(data: NewProductData): Promise<Product | null> {
+  if (isSupabaseConfigured()) {
+    try {
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+
+      // Obtener category_id
+      const { data: catData, error: catErr } = await supabase
+        .from("categories")
+        .select("id")
+        .eq("slug", data.category)
+        .maybeSingle();
+      if (catErr || !catData) throw catErr ?? new Error("Categoría no encontrada");
+
+      const { data: newProduct, error: prodErr } = await supabase
+        .from("products")
+        .insert({
+          category_id: catData.id,
+          slug: data.slug,
+          name: data.name,
+          short_description: data.shortDescription,
+          description: data.description,
+          base_price: data.basePrice,
+          compare_at_price: data.compareAtPrice ?? null,
+          status: data.status,
+          is_featured: data.isFeatured,
+          attributes: data.attributes,
+        })
+        .select("id, slug")
+        .single();
+      if (prodErr || !newProduct) throw prodErr ?? new Error("Error creando producto");
+
+      // Insertar variante inicial
+      const sku = generateSku(data.category, data.slug, data.initialVariant.color, data.initialVariant.size);
+      await supabase.from("product_variants").insert({
+        product_id: newProduct.id,
+        sku,
+        size: data.initialVariant.size,
+        color: data.initialVariant.color,
+        color_hex: data.initialVariant.colorHex,
+        stock_quantity: data.initialVariant.stockQuantity,
+        is_available: data.initialVariant.stockQuantity > 0,
+      });
+
+      return await getProductById(newProduct.id);
+    } catch (err) {
+      console.error("[ProductService] Error creando producto:", err);
+      return null;
+    }
+  }
+
+  // Demo mode
+  const id = crypto.randomUUID();
+  const variantId = crypto.randomUUID();
+  const imgId1 = crypto.randomUUID();
+  const imgId2 = crypto.randomUUID();
+  const sku = generateSku(data.category, data.slug, data.initialVariant.color, data.initialVariant.size);
+
+  try {
+    const newProduct = ProductSchema.parse({
+      id,
+      slug: data.slug,
+      name: data.name,
+      shortDescription: data.shortDescription,
+      description: data.description,
+      basePrice: data.basePrice,
+      compareAtPrice: data.compareAtPrice,
+      category: data.category,
+      isFeatured: data.isFeatured,
+      status: data.status,
+      attributes: data.attributes,
+      images: [
+        { id: imgId1, url: PLACEHOLDER_IMG, altText: `${data.name} vista frontal`, isPrimary: true, sortOrder: 0 },
+        { id: imgId2, url: PLACEHOLDER_IMG, altText: `${data.name} detalle`, isPrimary: false, sortOrder: 1 },
+      ],
+      variants: [
+        {
+          id: variantId,
+          sku,
+          size: data.initialVariant.size,
+          color: data.initialVariant.color,
+          colorHex: data.initialVariant.colorHex,
+          stockQuantity: data.initialVariant.stockQuantity,
+          isAvailable: data.initialVariant.stockQuantity > 0,
+        },
+      ],
+      createdAt: new Date().toISOString(),
+    });
+    _demoStore = [newProduct, ..._demoStore];
+    return newProduct;
+  } catch (err) {
+    console.error("[ProductService] Error creando producto en demo:", err);
+    return null;
+  }
+}
+
+// ─── deleteProduct ─────────────────────────────────────────────────────────────
+
+/** Archiva (soft-delete) un producto. Retorna true si fue exitoso. */
+export async function deleteProduct(productId: string): Promise<boolean> {
+  if (isSupabaseConfigured()) {
+    try {
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+      const { error } = await supabase
+        .from("products")
+        .update({ status: "archived", updated_at: new Date().toISOString() })
+        .eq("id", productId);
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.error("[ProductService] Error eliminando producto:", err);
+      return false;
+    }
+  }
+  _demoStore = _demoStore.filter((p) => p.id !== productId);
+  return true;
+}
+
+// ─── addVariant ────────────────────────────────────────────────────────────────
+
+/** Añade una nueva variante de talla/color a un producto existente. */
+export async function addVariant(
+  productId: string,
+  productSlug: string,
+  variantData: NewVariantData,
+): Promise<boolean> {
+  const sku = generateSku(
+    "cf",
+    productSlug,
+    variantData.color,
+    variantData.size,
+  );
+
+  if (isSupabaseConfigured()) {
+    try {
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+      const { error } = await supabase.from("product_variants").insert({
+        product_id: productId,
+        sku: `${sku}-${Date.now().toString(36)}`, // unicidad
+        size: variantData.size,
+        color: variantData.color,
+        color_hex: variantData.colorHex,
+        stock_quantity: variantData.stockQuantity,
+        is_available: variantData.stockQuantity > 0,
+      });
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.error("[ProductService] Error añadiendo variante:", err);
+      return false;
+    }
+  }
+
+  // Demo mode: mutar in-memory
+  _demoStore = _demoStore.map((p) => {
+    if (p.id !== productId) return p;
+    const newVariant = {
+      id: crypto.randomUUID(),
+      sku: `${sku}-${Date.now().toString(36)}`,
+      size: variantData.size as "XS" | "S" | "M" | "L" | "XL",
+      color: variantData.color,
+      colorHex: variantData.colorHex,
+      stockQuantity: variantData.stockQuantity,
+      isAvailable: variantData.stockQuantity > 0,
+    };
+    return { ...p, variants: [...p.variants, newVariant] };
+  });
+  return true;
+}
+
+// ─── deleteVariant ─────────────────────────────────────────────────────────────
+
+/** Elimina una variante específica de un producto. */
+export async function deleteVariant(
+  productId: string,
+  variantId: string,
+): Promise<boolean> {
+  if (isSupabaseConfigured()) {
+    try {
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+      const { error } = await supabase
+        .from("product_variants")
+        .delete()
+        .eq("id", variantId);
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.error("[ProductService] Error eliminando variante:", err);
+      return false;
+    }
+  }
+
+  _demoStore = _demoStore.map((p) => {
+    if (p.id !== productId) return p;
+    return { ...p, variants: p.variants.filter((v) => v.id !== variantId) };
+  });
+  return true;
+}
+
+// ─── updateVariantStock ────────────────────────────────────────────────────────
+
+/** Actualiza el stock de una variante (llamada desde la capa de servicio). */
+export async function updateVariantStock(
+  variantId: string,
+  stockQuantity: number,
+  isAvailable: boolean,
+): Promise<boolean> {
+  if (isSupabaseConfigured()) {
+    try {
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+      const { error } = await supabase
+        .from("product_variants")
+        .update({ stock_quantity: stockQuantity, is_available: isAvailable })
+        .eq("id", variantId);
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.error("[ProductService] Error actualizando stock:", err);
+      return false;
+    }
+  }
+  _demoStore = _demoStore.map((p) => ({
+    ...p,
+    variants: p.variants.map((v) =>
+      v.id === variantId ? { ...v, stockQuantity, isAvailable } : v,
+    ),
+  }));
+  return true;
 }

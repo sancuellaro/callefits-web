@@ -8,6 +8,7 @@ import { CATEGORY_LABELS } from "@/types/product";
 import { PricingForm } from "./PricingForm";
 import { StockForm } from "./StockForm";
 import { ImageUploadForm } from "./ImageUploadForm";
+import { AddVariantForm } from "./AddVariantForm";
 
 // ─── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -149,10 +150,15 @@ export default async function ProductEditorPage({ params }: ProductEditorPagePro
       {/* Tarjeta 3: Inventario y Variantes */}
       <AdminCard title="Inventario y Variantes">
         <p className="mb-4 text-xs text-neutral-400">
-          Ajusta el stock disponible de cada talla y color. Los cambios se reflejan en
-          tiempo real en la tienda pública.
+          Ajusta el stock y disponibilidad de cada talla y color. Los cambios se
+          reflejan en tiempo real en la tienda pública.
         </p>
-        <StockForm variants={product.variants} productSlug={product.slug} />
+        <StockForm
+          variants={product.variants}
+          productId={product.id}
+          productSlug={product.slug}
+        />
+        <AddVariantForm productId={product.id} productSlug={product.slug} />
       </AdminCard>
 
       {/* Tarjeta 4: Galería de Fotografías */}
