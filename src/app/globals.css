@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Superficie y texto — Blanco hueso premium / Ónix carbón */
+  --background: 40 20% 99%;
+  --foreground: 0 0% 8%;
+  --surface: 0 0% 100%;
+  --surface-muted: 40 10% 95%;
+
+  /* Identidad de marca — CALLEFITS BY DANNI */
+  --brand-primary: 0 0% 7%;
+  --brand-primary-foreground: 40 20% 99%;
+  --brand-secondary: 35 15% 91%;
+  --brand-secondary-foreground: 0 0% 8%;
+  --brand-accent: 14 65% 55%;
+  --brand-accent-foreground: 0 0% 100%;
+
+  /* Bordes y geometría — micro-borders, radios rectilíneos */
+  --border: 0 0% 90%;
+  --ring: 0 0% 8%;
+  --radius: 0.25rem;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html,
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
