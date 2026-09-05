@@ -9,6 +9,20 @@ Todas las modificaciones relevantes del proyecto se registran en este documento 
 
 ---
 
+## [0.1.0-alpha.2] - 2026-09-04
+
+### Added
+- `src/components/layout/AnnouncementBar.tsx` — Franja editorial superior con fondo ónix (`bg-brand-primary`), tipografía uppercase `tracking-[0.2em]`, texto truncado en móvil y fluido en desktop. Server Component.
+- `src/components/layout/Navbar.tsx` — Header sticky editorial (`backdrop-blur-md bg-background/85`, `border-b border-black/5`) con logo compositivo "CALLEFITS / BY DANNI", navegación desktop con micro-línea hover animada vía CSS, iconos de Instagram y TikTok (SVG inline) desde `brand.config.ts`, y drawer móvil animado con Framer Motion (overlay + panel deslizante, cierre por Escape/clic fuera, `aria-modal`). Client Component.
+- `src/components/layout/Footer.tsx` — Footer institucional 4 columnas (1→2→4 col responsivo sobre `bg-surface-muted`): Identidad, Exploración del catálogo, Atención al Cliente y Comunidad & Redes. Barra de copyright dinámica. Server Component.
+- `src/components/common/WhatsAppFloatingButton.tsx` — Cápsula pill de lujo (`bg-neutral-900`) con ícono `MessageCircle` + texto "¿Dudas con tu talla? Escríbenos" en desktop; círculo compacto 48×48 en móvil. Animación de entrada con Framer Motion, respeto de `prefers-reduced-motion`. Client Component.
+- `src/app/layout.tsx` ensamblado: `AnnouncementBar → Navbar → <main> → Footer → WhatsAppFloatingButton`.
+
+### Changed
+- `tailwind.config.ts` — Actualizado todos los colores semánticos a formato `hsl(var(--token) / <alpha-value>)` para habilitar modificadores de opacidad de Tailwind 3 (`bg-background/85`, `border-black/5`, etc.).
+
+---
+
 ## [0.1.0-alpha.1] - 2026-09-04
 
 ### Added

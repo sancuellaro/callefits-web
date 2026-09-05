@@ -11,26 +11,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        // Usando <alpha-value> para que los modificadores de opacidad de Tailwind
+        // (ej: bg-background/85, border-black/5) funcionen correctamente.
+        background: "hsl(var(--background) / <alpha-value>)",
+        foreground: "hsl(var(--foreground) / <alpha-value>)",
         surface: {
-          DEFAULT: "hsl(var(--surface))",
-          muted: "hsl(var(--surface-muted))",
+          DEFAULT: "hsl(var(--surface) / <alpha-value>)",
+          muted: "hsl(var(--surface-muted) / <alpha-value>)",
         },
-        border: "hsl(var(--border))",
-        ring: "hsl(var(--ring))",
+        border: "hsl(var(--border) / <alpha-value>)",
+        ring: "hsl(var(--ring) / <alpha-value>)",
         brand: {
           primary: {
-            DEFAULT: "hsl(var(--brand-primary))",
-            foreground: "hsl(var(--brand-primary-foreground))",
+            DEFAULT: "hsl(var(--brand-primary) / <alpha-value>)",
+            foreground: "hsl(var(--brand-primary-foreground) / <alpha-value>)",
           },
           secondary: {
-            DEFAULT: "hsl(var(--brand-secondary))",
-            foreground: "hsl(var(--brand-secondary-foreground))",
+            DEFAULT: "hsl(var(--brand-secondary) / <alpha-value>)",
+            foreground: "hsl(var(--brand-secondary-foreground) / <alpha-value>)",
           },
           accent: {
-            DEFAULT: "hsl(var(--brand-accent))",
-            foreground: "hsl(var(--brand-accent-foreground))",
+            DEFAULT: "hsl(var(--brand-accent) / <alpha-value>)",
+            foreground: "hsl(var(--brand-accent-foreground) / <alpha-value>)",
           },
         },
       },
