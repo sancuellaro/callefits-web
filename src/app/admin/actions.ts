@@ -388,8 +388,8 @@ export async function uploadProductImageAction(
   }
 
   try {
-    const { createClient } = await import("@/lib/supabase/server");
-    const supabase = await createClient();
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
     const { productId, altText, file } = parsed.data;
 
     // Generar ruta única en el bucket

@@ -549,8 +549,8 @@ const PLACEHOLDER_IMG =
 export async function createProduct(data: NewProductData): Promise<Product | null> {
   if (isSupabaseConfigured()) {
     try {
-      const { createClient } = await import("@/lib/supabase/server");
-      const supabase = await createClient();
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
 
       // Obtener category_id
       const { data: catData, error: catErr } = await supabase
@@ -659,8 +659,8 @@ export async function updateProductPricing(
 ): Promise<boolean> {
   if (isSupabaseConfigured()) {
     try {
-      const { createClient } = await import("@/lib/supabase/server");
-      const supabase = await createClient();
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
       const { error } = await supabase
         .from("products")
         .update({
@@ -701,8 +701,8 @@ export async function updateProductPricing(
 export async function deleteProduct(productId: string): Promise<boolean> {
   if (isSupabaseConfigured()) {
     try {
-      const { createClient } = await import("@/lib/supabase/server");
-      const supabase = await createClient();
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
       const { error } = await supabase
         .from("products")
         .update({ status: "archived", updated_at: new Date().toISOString() })
@@ -735,8 +735,8 @@ export async function addVariant(
 
   if (isSupabaseConfigured()) {
     try {
-      const { createClient } = await import("@/lib/supabase/server");
-      const supabase = await createClient();
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
       const { error } = await supabase.from("product_variants").insert({
         product_id: productId,
         sku: `${sku}-${Date.now().toString(36)}`, // unicidad
@@ -780,8 +780,8 @@ export async function deleteVariant(
 ): Promise<boolean> {
   if (isSupabaseConfigured()) {
     try {
-      const { createClient } = await import("@/lib/supabase/server");
-      const supabase = await createClient();
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
       const { error } = await supabase
         .from("product_variants")
         .delete()
@@ -811,8 +811,8 @@ export async function updateVariantStock(
 ): Promise<boolean> {
   if (isSupabaseConfigured()) {
     try {
-      const { createClient } = await import("@/lib/supabase/server");
-      const supabase = await createClient();
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
       const { error } = await supabase
         .from("product_variants")
         .update({ stock_quantity: stockQuantity, is_available: isAvailable })
@@ -832,3 +832,4 @@ export async function updateVariantStock(
   }));
   return true;
 }
+// --- updateProductPricing -----------------------------------------------------
