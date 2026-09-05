@@ -9,6 +9,18 @@ Todas las modificaciones relevantes del proyecto se registran en este documento 
 
 ---
 
+## [0.1.0-alpha.3] - 2026-09-04
+
+### Added
+- `src/types/product.ts` — Schemas Zod estrictos y tipos inferidos: `CategoryEnum` (`leggings`/`tops`/`sets`/`enterizos`), `SizeEnum` (XS→XL), `CompressionEnum`, `ProductStatusEnum`, `ProductImageSchema` (min 2), `ProductVariantSchema` (min 3, con regex hex para `colorHex`), `ProductAttributeSchema`, `ProductSchema` (slug kebab-case regex, name 3-120 chars), `ProductFiltersSchema`. Exporta `CATEGORY_LABELS`.
+- `src/lib/formatters.ts` — `formatPrice(amount)`: pesos colombianos con `Intl.NumberFormat('es-CO')` (ej. `$ 135.000 COP`). `calculateDiscountPercentage(basePrice, compareAtPrice)`: porcentaje entero con `Math.round`, retorna `0` si sin descuento. `buildProductWhatsAppUrl(params)`: URL `wa.me` con mensaje estructurado en negritas WhatsApp (`*text*`), emojis y saltos de línea, codificado con `encodeURIComponent`.
+- `src/data/mock-products.ts` — Catálogo de 16 prendas editoriales (4 por categoría) con nombres aspiracionales estilo marca premium, descripciones técnicas de tejido, colores sofisticados (Negro Ónix, Café Moca, Verde Oliva Táctico, Azul Medianoche, Terracota, Rosa Empolvado, Gris Mineral), fotos reales de Unsplash y SKUs únicos. Validado globalmente con `z.array(ProductSchema).parse()`.
+- `src/lib/services/product-service.ts` — Capa de acceso a datos desacoplada preparada para swap a Supabase: `getProducts(filters?)`, `getProductBySlug(slug)`, `getFeaturedProducts(limit?)`, `getRelatedProducts(currentSlug, category, limit?)`, `getCategoriesWithCounts()`.
+- `tests/unit/formatters.test.ts` — 19 pruebas unitarias cubriendo formateo COP, cálculo de descuentos y construcción de URLs WhatsApp con verificación de decodificación del mensaje.
+- `tests/unit/product-service.test.ts` — 26 pruebas: filtros por categoría (4 exactas), ordenamiento precio asc/desc (verificación de array), búsqueda textual, `getProductBySlug` (encontrado y null), featured, related y conteo de categorías.
+
+---
+
 ## [0.1.0-alpha.2] - 2026-09-04
 
 ### Added

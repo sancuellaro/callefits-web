@@ -2,9 +2,9 @@
 
 ## Información General
 - **Marca:** **CALLEFITS BY DANNI**
-- **Versión:** 0.1.0-alpha.2
-- **Fase Actual:** FASE 2 COMPLETADA → Lista para iniciar FASE 3 (Tipos TypeScript, Arquitectura de Datos y Mock Catálogo)
-- **Última Validación:** Layout maestro, Navbar drawer, Footer y cápsula WhatsApp verificados con Quality Gates en verde (2026-09-04)
+- **Versión:** 0.1.0-alpha.3
+- **Fase Actual:** FASE 3 COMPLETADA → Lista para iniciar FASE 4 (Catálogo Interactivo y Ficha de Producto con WhatsApp)
+- **Última Validación:** Capa de datos, 16 prendas editoriales, formatters y 50 tests unitarios verificados (2026-09-04)
 
 ---
 
@@ -38,10 +38,19 @@
 - [x] `tailwind.config.ts` actualizado con `<alpha-value>` para soportar modificadores de opacidad (`bg-background/85`, etc.).
 - [x] Quality Gates verdes: `npm run typecheck` (0 errores), `npm run lint` (0 advertencias), `npm run test` (5/5).
 
-### En Progreso (Fase 3 Inmediata)
-- [ ] Tipos TypeScript centralizados para productos, categorías y variantes.
-- [ ] Datos mock del catálogo para desarrollo sin Supabase.
-- [ ] Arquitectura de la capa de datos (repositorio pattern).
+### Completados (Fase 3)
+- [x] `src/types/product.ts` — Schemas Zod estrictos: `CategoryEnum`, `SizeEnum`, `CompressionEnum`, `ProductStatusEnum`, `ProductImageSchema`, `ProductVariantSchema`, `ProductAttributeSchema`, `ProductSchema`, `ProductFiltersSchema` + todos los tipos inferidos.
+- [x] `src/lib/formatters.ts` — `formatPrice` (COP con separador de miles), `calculateDiscountPercentage` (entero, 0 si sin descuento), `buildProductWhatsAppUrl` (URL wa.me con mensaje estructurado y encodeURIComponent).
+- [x] `src/data/mock-products.ts` — 16 prendas editoriales (4 × categoría) validadas con `z.array(ProductSchema).parse()`, nombres aspiracionales, descripciones técnicas de tejido, variantes de color sofisticadas y fotos Unsplash.
+- [x] `src/lib/services/product-service.ts` — Capa de servicios asíncronos desacoplada: `getProducts`, `getProductBySlug`, `getFeaturedProducts`, `getRelatedProducts`, `getCategoriesWithCounts`. Lista para swap a Supabase en Fase 6.
+- [x] `tests/unit/formatters.test.ts` — 19 pruebas: formateo COP, descuento, URL WhatsApp completa con verificación de decodificación.
+- [x] `tests/unit/product-service.test.ts` — 26 pruebas: filtros, ordenamientos, búsqueda textual, slug lookup, featured, related y categorías.
+- [x] Quality Gates verdes: `typecheck` (0 errores), `lint` (0 advertencias), `test` (50/50).
+
+### En Progreso (Fase 4 Inmediata)
+- [ ] Página de catálogo `/catalog` con filtros por categoría URL-safe y estado skeleton.
+- [ ] Tarjeta de producto `ProductCard.tsx` con precio, badge de descuento y CTA.
+- [ ] Ficha de producto `/catalog/[slug]` con galería, selector de variante y botón WhatsApp.
 
 ### Pendientes de Negocio (Para fases posteriores)
 - [ ] Dominio web definitivo registrado por el cliente.
@@ -56,7 +65,7 @@
 - [x] **Fase 0:** Gobernanza, Reglas Agénticas y Documentación Base
 - [x] **Fase 1:** Scaffolding Técnico, Tooling, Tokens CSS y Testing Base
 - [x] **Fase 2:** Layout Global, Navbar Responsive y Botón Flotante de WhatsApp
-- [ ] **Fase 3:** Arquitectura de Datos, Tipos TypeScript y Mock Catálogo (RF-01, RF-02, RF-03)
+- [x] **Fase 3:** Arquitectura de Datos, Tipos TypeScript y Mock Catálogo (RF-01, RF-02, RF-03)
 - [ ] **Fase 4:** Catálogo Interactivo y Ficha de Producto con Pedido a WhatsApp
 - [ ] **Fase 5:** Home Page de Alto Impacto, Storytelling "Danni", Confianza y FAQ (RF-04, RF-05, RF-06)
 - [ ] **Fase 6:** Conexión con Supabase (PostgreSQL, Migraciones SQL, Storage y RLS)
