@@ -320,7 +320,7 @@ const tops = [
       ),
       img(
         "img-006-2",
-        "1541534741688-6078c738b9d5",
+        "1574680096145-d05b474e2155",
         "Top Halter Sculpt Asymmetric vista lateral destacando el corte asimétrico y la banda reforzada",
         false,
         1,
@@ -490,7 +490,7 @@ const sets = [
     images: [
       img(
         "img-010-1",
-        "1578764078641-46dcb312d7a3",
+        "1545205597-3d9d02c29597",
         "Set Ribbed Athletic Olive en Verde Oliva Táctico, conjunto completo de legging largo y crop top coordinados",
         true,
         0,
@@ -623,7 +623,7 @@ const enterizos = [
     images: [
       img(
         "img-013-1",
-        "1573495612937-f01400959f76",
+        "1536922246289-88c42f957773",
         "Enterizo Escultor Halter Backless en Negro Ónix, vista de espalda abierta en U con sujeción interna",
         true,
         0,
@@ -666,7 +666,7 @@ const enterizos = [
     images: [
       img(
         "img-014-1",
-        "1541534741688-6078c738b9d5",
+        "1434682881908-b43d0467b798",
         "Catsuit Deportivo Long-Leg Eclipse en Negro Ónix, vista frontal del enterizo completo con cremallera invisible",
         true,
         0,

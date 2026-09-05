@@ -11,7 +11,7 @@ import { BRAND_CONFIG } from "@/config/brand.config";
 // ─── URLs ─────────────────────────────────────────────────────────────────────
 
 const HERO_IMAGE_URL =
-  "https://images.unsplash.com/photo-1573495612937-f01400959f76?auto=format&fit=crop&w=1200&q=80";
+  "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=80";
 
 const ADVISORY_WA_MESSAGE = encodeURIComponent(
   "Hola CALLEFITS BY DANNI, quisiera recibir asesoría personalizada sobre la guía de tallas para elegir mis prendas. ¡Muchas gracias!",
