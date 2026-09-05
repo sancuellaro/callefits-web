@@ -2,9 +2,9 @@
 
 ## Información General
 - **Marca:** **CALLEFITS BY DANNI**
-- **Versión:** 0.1.0-alpha.8
-- **Fase Actual:** FASE 7.1 COMPLETADA (CRUD Completo + Bug Fixes) → Lista para FASE 8 (SEO + WCAG + E2E)
-- **Última Validación:** CRUD completo admin, bug de precios resuelto, 150 tests — typecheck, lint limpios (2026-09-04)
+- **Versión:** 0.1.0-beta.1
+- **Fase Actual:** FASE 8 COMPLETADA → Lista para FASE 9 (CI/CD GitHub Actions + Vercel Production Deploy)
+- **Última Validación:** SEO Schema.org, Playwright E2E 15/15, metadatos dinámicos, 150 tests unitarios — typecheck, lint, build limpios (2026-09-04)
 
 ---
 
@@ -127,5 +127,5 @@
 - [x] **Fase 5:** Home Page de Alto Impacto, Storytelling "Danni", Confianza y FAQ (RF-04, RF-05, RF-06)
 - [x] **Fase 6:** Conexión con Supabase (PostgreSQL, Migraciones SQL, Storage y RLS)
 - [x] **Fase 7:** Panel Administrativo Base (CMS para precios, fotos y catálogo)
-- [ ] **Fase 8:** SEO Técnico Dinámico, Accesibilidad WCAG y Suite de Testing E2E
+- [x] **Fase 8:** SEO Técnico Dinámico, Accesibilidad WCAG y Suite de Testing E2E
 - [ ] **Fase 9:** Pipeline CI/CD con GitHub Actions y Despliegue en Vercel
