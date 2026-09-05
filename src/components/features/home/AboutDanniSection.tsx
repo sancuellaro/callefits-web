@@ -8,8 +8,7 @@ import { BRAND_CONFIG } from "@/config/brand.config";
 
 // ─── URLs ─────────────────────────────────────────────────────────────────────
 
-const DANNI_IMAGE_URL =
-  "https://images.unsplash.com/photo-1536922246289-88c42f957773?auto=format&fit=crop&w=900&q=85";
+const DANNI_IMAGE_URL = "/danni/hero-danni.jpg";
 
 const DANNI_WA_MESSAGE = encodeURIComponent(
   "Hola Danni! Soy seguidora de CALLEFITS BY DANNI y me encantaría conversar sobre la colección y recibir tu asesoría personalizada.",
