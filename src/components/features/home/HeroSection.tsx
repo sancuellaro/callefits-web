@@ -10,8 +10,7 @@ import { BRAND_CONFIG } from "@/config/brand.config";
 
 // ─── URLs ─────────────────────────────────────────────────────────────────────
 
-const HERO_IMAGE_URL =
-  "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=80";
+const HERO_IMAGE_URL = "/danni/hero-danni.jpg";
 
 const ADVISORY_WA_MESSAGE = encodeURIComponent(
   "Hola CALLEFITS BY DANNI, quisiera recibir asesoría personalizada sobre la guía de tallas para elegir mis prendas. ¡Muchas gracias!",
@@ -99,14 +98,14 @@ export function HeroSection() {
         </div>
 
         {/* ── Columna de imagen — derecha en desktop ───────────────────────── */}
-        <div className="relative order-first h-[50vw] max-h-[480px] bg-surface-muted lg:order-last lg:col-span-7 lg:h-auto lg:max-h-none">
+        <div className="relative order-first aspect-[4/5] w-full max-h-[520px] bg-surface-muted sm:aspect-[4/3] lg:order-last lg:col-span-7 lg:aspect-auto lg:h-auto lg:max-h-none">
           <Image
             src={HERO_IMAGE_URL}
             alt="Mujer atlética usando ropa deportiva CALLEFITS BY DANNI en estudio de entrenamiento"
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 58vw"
-            className="object-cover object-center"
+            className="object-cover object-top lg:object-center"
           />
           {/* Overlay sutil en gradiente cálido para vincular con el fondo */}
           <div
