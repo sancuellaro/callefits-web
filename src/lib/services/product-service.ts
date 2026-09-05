@@ -153,7 +153,8 @@ function mapDbRowToProduct(row: DbProductRow): Product | null {
           ? { priceOverride: Number(v.price_override) }
           : {}),
       })),
-      createdAt: row.created_at,
+      // Normalizar a ISO 8601 con 'Z' — PostgreSQL devuelve '+00:00' que Zod datetime rechaza
+      createdAt: new Date(row.created_at).toISOString(),
     });
   } catch (err) {
     console.error("[ProductService] Error mapeando producto:", row.id, err);
