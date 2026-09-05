@@ -9,6 +9,23 @@ Todas las modificaciones relevantes del proyecto se registran en este documento 
 
 ---
 
+## [0.1.0-alpha.6] - 2026-09-04
+
+### Added
+- `@supabase/supabase-js` y `@supabase/ssr` instalados como dependencias de producción.
+- `src/lib/supabase/client.ts` — Cliente browser (`createBrowserClient`) para componentes `'use client'`.
+- `src/lib/supabase/server.ts` — Cliente server async (`createServerClient`) con gestión segura de cookies Next.js 15 (`await cookies()`).
+- `src/lib/supabase/admin.ts` — Cliente admin con `SUPABASE_SERVICE_ROLE_KEY`, guardia de entorno (lanza error si se invoca en browser) y validación de variables.
+- `supabase/migrations/20260904_initial_schema.sql` — Migración SQL idempotente: 4 enums PG (`category_type`, `size_type`, `compression_type`, `product_status`), 5 tablas (`categories`, `products`, `product_variants`, `product_images`, `testimonials`), trigger `updated_at`, 10 índices (B-Tree + GIN para búsqueda), RLS activado en todas las tablas con políticas de lectura anónima y escritura autenticada, bucket `products-media` con límite 5MB y políticas de Storage.
+- `supabase/seed.sql` — 106 filas de datos de demostración: 4 categorías, 16 productos con atributos JSONB, 32 imágenes (Unsplash URLs como placeholder), 51 variantes y 3 testimonios.
+- `src/lib/services/product-service.ts` — **Adaptador Híbrido Resiliente**: `isSupabaseConfigured()` (exportada), types internos `DbProductRow/DbImageRow/DbVariantRow`, `resolveImageUrl()` (Supabase Storage o URL externa), `mapDbRowToProduct()` (snake_case → camelCase + Zod validation), `applyFiltersInMemory()` reutilizable, dynamic import del cliente server, fallback silencioso a mock con `console.warn`.
+- `tests/unit/supabase-service.test.ts` — 23 pruebas del adaptador: `isSupabaseConfigured()` false en test, todos los métodos con mock fallback y validación ProductSchema.
+
+### Changed
+- `.env.example` — Expandido con documentación técnica de las 3 variables de Supabase y sus rutas en el Dashboard.
+
+---
+
 ## [0.1.0-alpha.5] - 2026-09-04
 
 ### Added

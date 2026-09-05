@@ -2,9 +2,9 @@
 
 ## Información General
 - **Marca:** **CALLEFITS BY DANNI**
-- **Versión:** 0.1.0-alpha.5
-- **Fase Actual:** FASE 5 COMPLETADA → Lista para iniciar FASE 6 (Conexión Supabase, PostgreSQL y RLS)
-- **Última Validación:** Home Page editorial completa — 89 tests, typecheck, lint y build (/ Static ○) verificados (2026-09-04)
+- **Versión:** 0.1.0-alpha.6
+- **Fase Actual:** FASE 6 COMPLETADA → Lista para iniciar FASE 7 (Panel Administrativo CMS)
+- **Última Validación:** Backend Supabase, adaptador híbrido y 112 tests — typecheck, lint, build sin vars Supabase (2026-09-04)
 
 ---
 
@@ -76,8 +76,20 @@
 - [x] `tests/unit/home-sections.test.ts` — 19 pruebas: estructura del FAQ (5 Q, ids únicos, preguntas requeridas), `getFeaturedProducts` (featured, imágenes, variantes), `getCategoriesWithCounts` (4 cats, URLs válidas), `BRAND_CONFIG` (WA E.164, tagline, socials).
 - [x] Quality Gates verdes: `typecheck` (0), `lint` (0), `test` (89/89), `build` (✓ / = Static ○).
 
-### En Progreso (Fase 6 Inmediata)
-- [ ] Conexión con Supabase: PostgreSQL, migraciones SQL, Storage y Row Level Security (RLS).
+### Completados (Fase 6)
+- [x] Instalación de `@supabase/supabase-js` y `@supabase/ssr`.
+- [x] `src/lib/supabase/client.ts` — `createBrowserClient` para `'use client'` components.
+- [x] `src/lib/supabase/server.ts` — `createServerClient` async con cookie management (Next.js 15).
+- [x] `src/lib/supabase/admin.ts` — `createAdminClient` con `SUPABASE_SERVICE_ROLE_KEY`, guardia de entorno servidor.
+- [x] `.env.example` actualizado con documentación completa de las 3 variables de Supabase.
+- [x] `supabase/migrations/20260904_initial_schema.sql` — Schema PostgreSQL 16 idempotente: 4 enums, 5 tablas relacionales, trigger `updated_at`, índices B-Tree y GIN, RLS en todas las tablas (lectura pública anónima + escritura autenticada), bucket Storage `products-media` con políticas.
+- [x] `supabase/seed.sql` — 106 filas: 4 categorías, 16 productos con JSONB attributes, 32 imágenes (URLs Unsplash como placeholder), 51 variantes y 3 testimonios.
+- [x] `src/lib/services/product-service.ts` — Adaptador híbrido resiliente: `isSupabaseConfigured()` exportada, dynamic import del cliente server, mapper `DbProductRow → Product` (snake_case → camelCase, Zod validation), fallback silencioso a mock con `console.warn`.
+- [x] `tests/unit/supabase-service.test.ts` — 23 pruebas: `isSupabaseConfigured()` false en test env, todos los métodos del servicio validados con mock fallback y ProductSchema.
+- [x] Quality Gates verdes: `typecheck` (0), `lint` (0), `test` (112/112), `build` (✓ sin vars Supabase).
+
+### En Progreso (Fase 7 Inmediata)
+- [ ] Panel Administrativo CMS: autenticación Supabase Auth, middleware de protección, formularios de gestión de prendas.
 
 ### Pendientes de Negocio (Para fases posteriores)
 - [ ] Dominio web definitivo registrado por el cliente.
@@ -95,7 +107,7 @@
 - [x] **Fase 3:** Arquitectura de Datos, Tipos TypeScript y Mock Catálogo (RF-01, RF-02, RF-03)
 - [x] **Fase 4:** Catálogo Interactivo y Ficha de Producto con Pedido a WhatsApp
 - [x] **Fase 5:** Home Page de Alto Impacto, Storytelling "Danni", Confianza y FAQ (RF-04, RF-05, RF-06)
-- [ ] **Fase 6:** Conexión con Supabase (PostgreSQL, Migraciones SQL, Storage y RLS)
+- [x] **Fase 6:** Conexión con Supabase (PostgreSQL, Migraciones SQL, Storage y RLS)
 - [ ] **Fase 7:** Panel Administrativo Base (CMS para precios, fotos y catálogo)
 - [ ] **Fase 8:** SEO Técnico Dinámico, Accesibilidad WCAG y Suite de Testing E2E
 - [ ] **Fase 9:** Pipeline CI/CD con GitHub Actions y Despliegue en Vercel
