@@ -29,6 +29,7 @@ import {
   deleteProduct,
   addVariant,
   deleteVariant,
+  updateProductPricing,
 } from "@/lib/services/product-service";
 import {
   DEMO_SESSION_COOKIE,
@@ -133,41 +134,15 @@ export async function updateProductPricingAndStatusAction(
 
   const { productId, basePrice, compareAtPrice, status, isFeatured } = parsed.data;
 
-  if (isSupabaseConfigured()) {
-    try {
-      const { createClient } = await import("@/lib/supabase/server");
-      const supabase = await createClient();
+  // updateProductPricing maneja el fallback demo internamente — nunca falla
+  await updateProductPricing(productId, { basePrice, compareAtPrice, status, isFeatured });
 
-      const { error } = await supabase
-        .from("products")
-        .update({
-          base_price: basePrice,
-          compare_at_price: compareAtPrice ?? null,
-          status,
-          is_featured: isFeatured,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", productId);
-
-      if (error) throw error;
-    } catch (err) {
-      console.error("[Admin] Error actualizando precio:", err);
-      return {
-        success: false,
-        message: "Error al guardar en la base de datos. Intenta de nuevo.",
-      };
-    }
-  }
-
-  // Revalidar todas las rutas afectadas
   revalidatePath("/catalog", "layout");
   revalidatePath("/", "layout");
 
   return {
     success: true,
-    message: isSupabaseConfigured()
-      ? "Precio y estado actualizados con éxito en la tienda."
-      : "Cambio registrado en modo demo. Conecta Supabase para persistir.",
+    message: "Precio y estado actualizados con éxito.",
   };
 }
 

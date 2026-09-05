@@ -38,8 +38,8 @@ export function PricingForm({ product }: PricingFormProps) {
               id="basePrice"
               name="basePrice"
               type="number"
-              min={1}
-              step={1000}
+              min={1000}
+              step={1}
               required
               defaultValue={product.basePrice}
               className="h-11 w-full rounded-[var(--radius)] border border-black/10 bg-surface pl-7 pr-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -63,8 +63,8 @@ export function PricingForm({ product }: PricingFormProps) {
               id="compareAtPrice"
               name="compareAtPrice"
               type="number"
-              min={1}
-              step={1000}
+              min={1000}
+              step={1}
               defaultValue={product.compareAtPrice ?? ""}
               placeholder="Sin oferta"
               className="h-11 w-full rounded-[var(--radius)] border border-black/10 bg-surface pl-7 pr-3 text-sm text-foreground placeholder:text-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

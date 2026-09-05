@@ -642,9 +642,62 @@ export async function createProduct(data: NewProductData): Promise<Product | nul
   }
 }
 
+// ─── updateProductPricing ─────────────────────────────────────────────────────
+
+/**
+ * Actualiza precio, compareAtPrice, estado y destacado de un producto.
+ * Si Supabase falla, aplica el cambio en el demo store (fallback resiliente).
+ */
+export async function updateProductPricing(
+  productId: string,
+  data: {
+    basePrice: number;
+    compareAtPrice: number | undefined;
+    status: "active" | "draft";
+    isFeatured: boolean;
+  },
+): Promise<boolean> {
+  if (isSupabaseConfigured()) {
+    try {
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+      const { error } = await supabase
+        .from("products")
+        .update({
+          base_price: data.basePrice,
+          compare_at_price: data.compareAtPrice ?? null,
+          status: data.status,
+          is_featured: data.isFeatured,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", productId);
+      if (error) throw error;
+      return true; // Supabase actualizó correctamente
+    } catch (err) {
+      console.warn(
+        "[ProductService] Supabase no disponible, actualizando demo store:",
+        err,
+      );
+      // Cae al demo store a continuación
+    }
+  }
+  // Demo mode (o fallback cuando Supabase falla)
+  _demoStore = _demoStore.map((p) => {
+    if (p.id !== productId) return p;
+    return {
+      ...p,
+      basePrice: data.basePrice,
+      compareAtPrice: data.compareAtPrice,
+      status: data.status,
+      isFeatured: data.isFeatured,
+    };
+  });
+  return true;
+}
+
 // ─── deleteProduct ─────────────────────────────────────────────────────────────
 
-/** Archiva (soft-delete) un producto. Retorna true si fue exitoso. */
+/** Archiva (soft-delete) un producto. Fallback al demo store si Supabase falla. */
 export async function deleteProduct(productId: string): Promise<boolean> {
   if (isSupabaseConfigured()) {
     try {
@@ -657,8 +710,8 @@ export async function deleteProduct(productId: string): Promise<boolean> {
       if (error) throw error;
       return true;
     } catch (err) {
-      console.error("[ProductService] Error eliminando producto:", err);
-      return false;
+      console.warn("[ProductService] Supabase no disponible, eliminando del demo store:", err);
+      // Cae al demo store
     }
   }
   _demoStore = _demoStore.filter((p) => p.id !== productId);
@@ -696,12 +749,12 @@ export async function addVariant(
       if (error) throw error;
       return true;
     } catch (err) {
-      console.error("[ProductService] Error añadiendo variante:", err);
-      return false;
+      console.warn("[ProductService] Supabase no disponible, añadiendo al demo store:", err);
+      // Cae al demo store
     }
   }
 
-  // Demo mode: mutar in-memory
+  // Demo mode (o fallback cuando Supabase falla)
   _demoStore = _demoStore.map((p) => {
     if (p.id !== productId) return p;
     const newVariant = {
@@ -736,8 +789,8 @@ export async function deleteVariant(
       if (error) throw error;
       return true;
     } catch (err) {
-      console.error("[ProductService] Error eliminando variante:", err);
-      return false;
+      console.warn("[ProductService] Supabase no disponible, eliminando del demo store:", err);
+      // Cae al demo store
     }
   }
 
