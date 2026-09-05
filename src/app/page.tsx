@@ -1,22 +1,61 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+/**
+ * Home Page — CALLEFITS BY DANNI.
+ * Server Component asíncrono: ensambla todas las secciones de la Home.
+ * Espaciado vertical rítmico con space-y para coherencia editorial.
+ */
+import type { Metadata } from "next";
+import { HeroSection } from "@/components/features/home/HeroSection";
+import { FeaturedCategoriesSection } from "@/components/features/home/FeaturedCategoriesSection";
+import { FeaturedProductsSection } from "@/components/features/home/FeaturedProductsSection";
+import { BrandPillarsSection } from "@/components/features/home/BrandPillarsSection";
+import { AboutDanniSection } from "@/components/features/home/AboutDanniSection";
+import { TestimonialsSection } from "@/components/features/home/TestimonialsSection";
+import { FAQSection } from "@/components/features/home/FAQSection";
 import { BRAND_CONFIG } from "@/config/brand.config";
 
-export default function Home() {
+// ─── Metadatos ────────────────────────────────────────────────────────────────
+
+export const metadata: Metadata = {
+  title: `${BRAND_CONFIG.name} — ${BRAND_CONFIG.tagline}`,
+  description:
+    "Descubre la colección de ropa deportiva de alto rendimiento de CALLEFITS BY DANNI: leggings, tops, sets y enterizos con confección premium, cero transparencias y envíos a toda Colombia.",
+  openGraph: {
+    title: BRAND_CONFIG.name,
+    description: BRAND_CONFIG.tagline,
+    type: "website",
+  },
+};
+
+// ─── Página ───────────────────────────────────────────────────────────────────
+
+export default async function HomePage() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-24 text-center">
-      <Badge variant="accent">Fase 1 · Scaffolding</Badge>
-      <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-        {BRAND_CONFIG.name}
-      </h1>
-      <p className="max-w-md text-sm uppercase tracking-widest text-foreground/60">
-        {BRAND_CONFIG.tagline}
-      </p>
-      <div className="flex flex-wrap items-center justify-center gap-4">
-        <Button variant="default">Explorar Colección</Button>
-        <Button variant="outline">Sobre Danni</Button>
-        <Button variant="secondary">Contactar</Button>
+    <>
+      {/* ① Hero — pantalla completa editorial */}
+      <HeroSection />
+
+      {/* ② Resto de secciones con espaciado rítmico vertical */}
+      <div className="space-y-20 py-16 md:space-y-32 md:py-24">
+        {/* ② Categorías destacadas */}
+        <FeaturedCategoriesSection />
+
+        {/* ③ Prendas más deseadas */}
+        <FeaturedProductsSection />
+
+        {/* ④ Pilares de la marca — fondo contrastado, ocupa el ancho completo */}
+        <div className="-mx-0 w-full">
+          <BrandPillarsSection />
+        </div>
+
+        {/* ⑤ Storytelling — Sobre Danni */}
+        <AboutDanniSection />
+
+        {/* ⑥ Prueba social */}
+        <TestimonialsSection />
+
+        {/* ⑦ FAQ */}
+        <FAQSection />
       </div>
-    </main>
+    </>
   );
 }

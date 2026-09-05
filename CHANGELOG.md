@@ -9,6 +9,22 @@ Todas las modificaciones relevantes del proyecto se registran en este documento 
 
 ---
 
+## [0.1.0-alpha.5] - 2026-09-04
+
+### Added
+- `src/data/faq-data.ts` — Módulo tipado con 5 `FAQItem[]` extraídas para testabilidad independiente.
+- `src/components/features/home/HeroSection.tsx` — Hero `min-h-[80/88vh]`, layout split 5+7 cols (texto / imagen), tagline, titular de 3 líneas con autoridad tipográfica, CTA doble (Catálogo + WhatsApp Asesoría), sellos de confianza con iconos lucide. Server Component.
+- `src/components/features/home/FeaturedCategoriesSection.tsx` — Grid editorial 2×2 / 4 cols, imágenes de `getCategoriesWithCounts()`, overlay `bg-gradient-to-t from-black/65`, conteo de prendas por categoría. Server Component async.
+- `src/components/features/home/FeaturedProductsSection.tsx` — 4 prendas destacadas vía `getFeaturedProducts(4)`, reutiliza `ProductCard` de Fase 4. Server Component async.
+- `src/components/features/home/BrandPillarsSection.tsx` — 4 pilares diferenciadores con iconos `lucide-react`, fondo `bg-surface-muted` con `border-y border-black/5`. Server Component.
+- `src/components/features/home/AboutDanniSection.tsx` — Layout `lg:grid-cols-12` (5+7), foto editorial Unsplash, narrativa auténtica, cita con `border-l-2 border-brand-primary`, CTA a WhatsApp personal de Danni. Server Component.
+- `src/components/features/home/TestimonialsSection.tsx` — 3 tarjetas con estrellas `text-brand-accent`, badge "Compra Verificada", contenido placeholder de demostración. Server Component.
+- `src/components/features/home/FAQSection.tsx` — Acordeón one-at-a-time con 5 preguntas de `FAQ_DATA`, transición `max-h` CSS, CTA WhatsApp al pie. Client Component.
+- `src/app/page.tsx` — Ensamblaje Home con 7 secciones, `space-y-20 md:space-y-32`, prerenderizada estáticamente (`○ Static`).
+- `tests/unit/home-sections.test.ts` — 19 pruebas.
+
+---
+
 ## [0.1.0-alpha.4] - 2026-09-04
 
 ### Added

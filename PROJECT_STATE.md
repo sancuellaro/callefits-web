@@ -2,9 +2,9 @@
 
 ## Información General
 - **Marca:** **CALLEFITS BY DANNI**
-- **Versión:** 0.1.0-alpha.4
-- **Fase Actual:** FASE 4 COMPLETADA → Lista para iniciar FASE 5 (Home Page de Alto Impacto)
-- **Última Validación:** Catálogo filtrable, ficha de producto + botón WhatsApp — 70 tests, typecheck, lint y build de producción verificados (2026-09-04)
+- **Versión:** 0.1.0-alpha.5
+- **Fase Actual:** FASE 5 COMPLETADA → Lista para iniciar FASE 6 (Conexión Supabase, PostgreSQL y RLS)
+- **Última Validación:** Home Page editorial completa — 89 tests, typecheck, lint y build (/ Static ○) verificados (2026-09-04)
 
 ---
 
@@ -63,8 +63,21 @@
 - [x] `tests/unit/catalog-ui.test.ts` — 20 pruebas de `variant-utils` (colores, tallas, disponibilidad, primer disponible).
 - [x] Quality Gates verdes: `typecheck` (0), `lint` (0), `test` (70/70), `build` (✓ sin errores).
 
-### En Progreso (Fase 5 Inmediata)
-- [ ] Home Page de alto impacto: Hero, Categorías, Diferenciadores, Storytelling Danni, Testimonios, FAQ.
+### Completados (Fase 5)
+- [x] `src/data/faq-data.ts` — 5 FAQs tipadas (`FAQItem[]`) extraídas como módulo testeable independiente.
+- [x] `HeroSection.tsx` — Hero 80/88vh, layout split texto/imagen, tagline, titular 3 líneas, CTAs dobles (catálogo + asesoría WhatsApp), 3 sellos de confianza. Server Component.
+- [x] `FeaturedCategoriesSection.tsx` — Grid 2×2 mobile / 4 cols desktop, imágenes desde `getCategoriesWithCounts()`, overlay degradé, conteo de prendas. Server Component async.
+- [x] `FeaturedProductsSection.tsx` — 4 prendas destacadas vía `getFeaturedProducts(4)`, reutiliza `ProductCard`. Server Component async.
+- [x] `BrandPillarsSection.tsx` — 4 pilares con iconos `lucide-react` (Activity, Shield, Layers, MessageCircle), fondo `bg-surface-muted`, bordes `border-y border-black/5`. Server Component.
+- [x] `AboutDanniSection.tsx` — Layout `lg:grid-cols-12` asimétrico (5+7), foto editorial, narrativa auténtica, cita con `border-l-2 border-brand-primary`, CTA WhatsApp a Danni. Server Component.
+- [x] `TestimonialsSection.tsx` — 3 tarjetas con `★` en `text-brand-accent`, badge "Compra Verificada", reseñas placeholder de demostración. Server Component.
+- [x] `FAQSection.tsx` — Acordeón cliente con 5 preguntas (`FAQ_DATA`), estado one-at-a-time, transición `max-h`, CTA WhatsApp al pie. Client Component.
+- [x] `src/app/page.tsx` — Ensamblaje final con `space-y-20 md:space-y-32`, Home prerenderizada estáticamente (`○`).
+- [x] `tests/unit/home-sections.test.ts` — 19 pruebas: estructura del FAQ (5 Q, ids únicos, preguntas requeridas), `getFeaturedProducts` (featured, imágenes, variantes), `getCategoriesWithCounts` (4 cats, URLs válidas), `BRAND_CONFIG` (WA E.164, tagline, socials).
+- [x] Quality Gates verdes: `typecheck` (0), `lint` (0), `test` (89/89), `build` (✓ / = Static ○).
+
+### En Progreso (Fase 6 Inmediata)
+- [ ] Conexión con Supabase: PostgreSQL, migraciones SQL, Storage y Row Level Security (RLS).
 
 ### Pendientes de Negocio (Para fases posteriores)
 - [ ] Dominio web definitivo registrado por el cliente.
@@ -81,7 +94,7 @@
 - [x] **Fase 2:** Layout Global, Navbar Responsive y Botón Flotante de WhatsApp
 - [x] **Fase 3:** Arquitectura de Datos, Tipos TypeScript y Mock Catálogo (RF-01, RF-02, RF-03)
 - [x] **Fase 4:** Catálogo Interactivo y Ficha de Producto con Pedido a WhatsApp
-- [ ] **Fase 5:** Home Page de Alto Impacto, Storytelling "Danni", Confianza y FAQ (RF-04, RF-05, RF-06)
+- [x] **Fase 5:** Home Page de Alto Impacto, Storytelling "Danni", Confianza y FAQ (RF-04, RF-05, RF-06)
 - [ ] **Fase 6:** Conexión con Supabase (PostgreSQL, Migraciones SQL, Storage y RLS)
 - [ ] **Fase 7:** Panel Administrativo Base (CMS para precios, fotos y catálogo)
 - [ ] **Fase 8:** SEO Técnico Dinámico, Accesibilidad WCAG y Suite de Testing E2E
